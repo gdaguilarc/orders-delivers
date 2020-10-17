@@ -3,7 +3,7 @@ const knex = require("../database/connection");
 exports.all = async () => {
   return await knex("order")
     .select("*")
-    .join("location", "order.location_id", "=", "location.id");
+    .leftJoin("location", "order.location_id", "=", "location.id");
 };
 
 exports.find = async (id) => {
@@ -44,8 +44,8 @@ exports.update = async (id, location) => {
 
 exports.ordersTrack = async (id) => {
   order = await this.find(id)
-    .join("transfer", "order.transfer_id", "=", "transfer.order_id")
-    .join("location", "transfer.location_id", "=", "location.id");
+    .leftJoin("transfer", "order.transfer_id", "=", "transfer.order_id")
+    .leftJoin("location", "transfer.location_id", "=", "location.id");
 
   return order;
 };

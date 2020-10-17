@@ -12,24 +12,24 @@ import useStyles from "./InputOrdersStyles";
 const InputOrders = ({ onChange }) => {
   const classes = useStyles();
 
-  //   const [todo, setTodo] = useState("");
+  const [todo, setTodo] = useState("");
 
-  //   const onAdd = async () => {
-  //     if (todo.replace(/\s/g, "") !== "") {
-  //       const { data } = await axios.post("http://localhost:4000/tasks", {
-  //         description: todo,
-  //       });
-  //       onChange(data);
-  //       setTodo("");
-  //     }
-  //   };
+  const onAdd = async () => {
+    if (todo.replace(/\s/g, "") !== "") {
+      const { data } = await axios.post("http://localhost:4000/", {
+        name: todo,
+      });
+      //   onChange(data);
+      setTodo("");
+    }
+  };
 
-  //   const onTodoChange = useCallback(
-  //     ({ target }) => {
-  //       setTodo(target.value);
-  //     },
-  //     [setTodo]
-  //   );
+  const onTodoChange = useCallback(
+    ({ target }) => {
+      setTodo(target.value);
+    },
+    [setTodo]
+  );
 
   return (
     <Card className={classes.cards}>
@@ -41,8 +41,8 @@ const InputOrders = ({ onChange }) => {
             variant="outlined"
             size="small"
             className={classes.textfield}
-            // value={todo}
-            // onChange={onTodoChange}
+            value={todo}
+            onChange={onTodoChange}
           />
         </Grid>
         <Grid item sm={12} md={12} lg={2} xl={2}>
@@ -50,7 +50,7 @@ const InputOrders = ({ onChange }) => {
             color="primary"
             size="large"
             variant="outlined"
-            // onClick={onAdd}
+            onClick={onAdd}
           >
             Add
           </Button>

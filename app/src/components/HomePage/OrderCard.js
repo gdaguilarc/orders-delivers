@@ -15,15 +15,17 @@ const OrderCard = ({ id, name, location }) => {
 
   return (
     <Grid item sm={12} key={id}>
-      <Card className={classes.cards}>
-        <Typography
-          className={classes.header}
-          variant="subtitle1"
-          color="textSecondary"
-        >
-          Order: {name} | Location: {location}
-        </Typography>
-      </Card>
+      <CardActionArea>
+        <Card className={classes.cards}>
+          <Typography
+            className={classes.header}
+            variant="subtitle1"
+            color="textSecondary"
+          >
+            Order: {name} | Location: {location}
+          </Typography>
+        </Card>
+      </CardActionArea>
     </Grid>
   );
 };

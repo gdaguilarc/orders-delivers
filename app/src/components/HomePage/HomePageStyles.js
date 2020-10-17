@@ -27,6 +27,10 @@ const useStyles = makeStyles((theme) =>
       minHeight: "60vh",
       color: theme.palette.primary.light,
     },
+
+    darkShadow: {
+      minHeight: "25vh",
+    },
     darkcardsSmall: {
       backgroundColor: "#8b96ac",
       padding: theme.spacing(2),
