@@ -4,34 +4,49 @@ exports.all = () => {
   return knex("order").select("*");
 };
 
+exports.find = (id) => {
+  return knex("order").select("*").where("id", id).first();
+};
+
 exports.create = (order) => {
   order = {
     name: order.name,
     location_id: 1,
   };
   id_created = knex("order").insert(order);
-  this.find(id_created).then((order) => {
+  this.transfer(id_created);
+  return id_created;
+};
+
+exports.update = (id, location) => {
+  order = this.find(id);
+  if (
+    (order.delivered_center && location == 1) ||
+    (order.delivered && location != 4)
+  ) {
+    return null;
+  }
+  if (!order.delivered_center && location > 1) {
+    order.delivered_center = true;
+  }
+  if (!order.delivered && location == 4) {
+    order.delivered = true;
+  }
+
+  order.location_id = location;
+
+  id_update = knex("order").update(order).where("id", id);
+  this.transfer(id_update);
+  return id_update;
+};
+
+transfer = (id) => {
+  this.find(id).then((order) => {
     knex("transfer").insert({
       order_id: order.id,
       location_id: order.location_id,
     });
   });
-  return id_created;
-};
-/*
-exports.update = (id, location) => {
-  order = {
-    location_id: location
-  }
-
-  return knex("tasks")
-    .update(task)
-    .update("updated_at", knex.fn.now())
-    .where("id", id);
-};
-*/
-exports.find = (id) => {
-  return knex("order").select("*").where("id", id).first();
 };
 /*
 

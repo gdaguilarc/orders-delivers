@@ -15,7 +15,11 @@ exports.addOrder = (req, res) => {
     }
   });
 };
-/*
-exports.updateOrder = (req, res) => {
 
-};*/
+exports.updateOrder = (req, res) => {
+  let id = req.params.id;
+  let location = req.params.location;
+  Order.update(id, location).then(() => {
+    res.send("success");
+  });
+};
