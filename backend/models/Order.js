@@ -8,13 +8,13 @@ exports.find = async (id) => {
   return await knex("order").select("*").where("id", id).first();
 };
 
-exports.create = async (order) => {
+exports.create = async ({ name }) => {
   order = {
-    name: order.name,
+    name,
     location_id: 1,
   };
   id_created = await knex("order").insert(order);
-  await this.transfer(id_created);
+  await transfer(id_created);
   return id_created;
 };
 
@@ -49,9 +49,9 @@ exports.ordersUpdates = async (id) => {
   return id_update;
 };
 
-transfer = async (id) => {
+const transfer = async (id) => {
   await this.find(id).then((order) => {
-    await knex("transfer").insert({
+    knex("transfer").insert({
       order_id: order.id,
       location_id: order.location_id,
     });
