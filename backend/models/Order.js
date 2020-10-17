@@ -1,25 +1,25 @@
 const knex = require("../database/connection");
 
-exports.all = () => {
-  return knex("order").select("*");
+exports.all = async () => {
+  return await knex("order").select("*");
 };
 
-exports.find = (id) => {
-  return knex("order").select("*").where("id", id).first();
+exports.find = async (id) => {
+  return await knex("order").select("*").where("id", id).first();
 };
 
-exports.create = (order) => {
+exports.create = async (order) => {
   order = {
     name: order.name,
     location_id: 1,
   };
-  id_created = knex("order").insert(order);
-  this.transfer(id_created);
+  id_created = await knex("order").insert(order);
+  await this.transfer(id_created);
   return id_created;
 };
 
-exports.update = (id, location) => {
-  order = this.find(id);
+exports.update = async (id, location) => {
+  order = await this.find(id);
   if (
     (order.delivered_center && location == 1) ||
     (order.delivered && location != 4)
@@ -35,14 +35,23 @@ exports.update = (id, location) => {
 
   order.location_id = location;
 
-  id_update = knex("order").update(order).where("id", id);
-  this.transfer(id_update);
+  id_update = await knex("order").update(order).where("id", id);
+  await this.transfer(id_update);
   return id_update;
 };
 
-transfer = (id) => {
-  this.find(id).then((order) => {
-    knex("transfer").insert({
+exports.ordersUpdates = async (id) => {
+  order = await this.find(id);
+  order_updates = knex("transfer").select("*").where("order_id", order.id);
+  locations = [];
+  order_updates;
+
+  return id_update;
+};
+
+transfer = async (id) => {
+  await this.find(id).then((order) => {
+    await knex("transfer").insert({
       order_id: order.id,
       location_id: order.location_id,
     });
