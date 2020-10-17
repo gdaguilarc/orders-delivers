@@ -1,7 +1,9 @@
 const knex = require("../database/connection");
 
 exports.all = async () => {
-  return await knex("order").select("*");
+  return await knex("order")
+    .select("*")
+    .join("location", "order.location_id", "=", "location.id");
 };
 
 exports.find = async (id) => {
@@ -40,18 +42,17 @@ exports.update = async (id, location) => {
   return id_update;
 };
 
-exports.ordersUpdates = async (id) => {
-  order = await this.find(id);
-  order_updates = knex("transfer").select("*").where("order_id", order.id);
-  locations = [];
-  order_updates;
+exports.ordersTrack = async (id) => {
+  order = await this.find(id)
+    .join("transfer", "order.transfer_id", "=", "transfer.order_id")
+    .join("location", "transfer.location_id", "=", "location.id");
 
-  return id_update;
+  return order;
 };
 
 transfer = async (id) => {
   await this.find(id).then((order) => {
-    await knex("transfer").insert({
+    knex("transfer").insert({
       order_id: order.id,
       location_id: order.location_id,
     });

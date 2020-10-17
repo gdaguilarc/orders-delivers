@@ -23,3 +23,10 @@ exports.updateOrder = (req, res) => {
     res.send("success");
   });
 };
+
+exports.orderPath = (req, res) => {
+  let id = req.params.id;
+  Order.ordersTrack(id).then((order) => {
+    res.send(order);
+  });
+};
