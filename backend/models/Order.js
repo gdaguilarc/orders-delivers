@@ -3,11 +3,11 @@ const knex = require("../database/connection");
 exports.all = async () => {
   return await knex("order")
     .select("*")
-    .leftJoin("location", "order.location_id", "=", "location.id");
+    .innerJoin("location", "order.location_id", "=", "location.id_location");
 };
 
 exports.find = async (id) => {
-  return await knex("order").select("*").where("id", id).first();
+  return await knex("order").select("*").where("id_order", id).first();
 };
 
 exports.create = async ({ name }) => {
@@ -37,7 +37,7 @@ exports.update = async (id, location) => {
 
   order.location_id = location;
 
-  id_update = await knex("order").update(order).where("id", id);
+  id_update = await knex("order").update(order).where("id_order", id);
   await this.transfer(id_update);
   return id_update;
 };
@@ -45,7 +45,7 @@ exports.update = async (id, location) => {
 exports.ordersTrack = async (id) => {
   order = await this.find(id)
     .leftJoin("transfer", "order.transfer_id", "=", "transfer.order_id")
-    .leftJoin("location", "transfer.location_id", "=", "location.id");
+    .leftJoin("location", "transfer.location_id", "=", "location.id_location");
 
   return order;
 };
@@ -53,7 +53,7 @@ exports.ordersTrack = async (id) => {
 const transfer = async (id) => {
   await this.find(id).then((order) => {
     knex("transfer").insert({
-      order_id: order.id,
+      order_id: order.id_order,
       location_id: order.location_id,
     });
   });

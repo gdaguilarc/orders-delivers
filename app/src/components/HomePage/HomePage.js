@@ -13,6 +13,7 @@ import InputOrders from "../InputOrders";
 
 import Dragula from "react-dragula";
 import useFetchTasks from "./UseFetch";
+import Axios from "axios";
 
 const HomePage = () => {
   const classes = useStyles();
@@ -33,23 +34,23 @@ const HomePage = () => {
     let failed = findDOMNode(failedRef.current);
 
     Dragula([init, devlc], {
-      moves: function (el, source, handle, sibling) {
-        if (source === init) {
-          // aqui va axios
-        }
-        return true;
-      },
       accepts: function (el, target) {
-        return target !== init;
+        if (target === devlc) {
+          // aqui va axios
+          Axios.post(`http://localhost:4000/update/${el.id}/2`);
+          return true;
+        }
+        return false;
       },
     });
 
     Dragula([devlc, devProc], {
-      moves: function (el, source, handle, sibling) {
-        if (source === devlc) {
-          // aqui va axios
+      accepts: function (el, target) {
+        console.log(el.id)
+        if (target === devProc) {
+          Axios.post(`http://localhost:4000/update/${el.id}/3`);
         } else {
-          // aqui va axios
+          Axios.post(`http://localhost:4000/update/${el.id}/2`);
         }
         return true;
       },
@@ -57,62 +58,44 @@ const HomePage = () => {
 
     Dragula([devProc, complete], {
       accepts: function (el, target) {
-        return target !== devProc;
-      },
-      moves: function (el, source, handle, sibling) {
-        if (source === devProc) {
-          // aqui va axios
+        if (target === complete) {
+          Axios.post(`http://localhost:4000/update/${el.id}/4`);
+          return true;
         }
-        return true;
+        return false;
       },
     });
 
     Dragula([devProc, failed], {
       accepts: function (el, target) {
-        return target !== devProc;
-      },
-      moves: function (el, source, handle, sibling) {
-        if (source === devProc) {
-          // aqui va axios
+        if (target === failed) {
+          Axios.post(`http://localhost:4000/update/${el.id}/5`);
+          return true;
         }
-        return true;
+        return false;
       },
     });
 
     Dragula([devlc, complete], {
       accepts: function (el, target) {
-        return target !== devlc;
-      },
-      moves: function (el, source, handle, sibling) {
-        if (source === devlc) {
-          // aqui va axios
+        if (target === complete) {
+          Axios.post(`http://localhost:4000/update/${el.id}/4`);
+          return true;
         }
-        return true;
+        return false;
       },
     });
 
     Dragula([devlc, failed], {
       accepts: function (el, target) {
-        return target !== devlc;
-      },
-      moves: function (el, source, handle, sibling) {
-        if (source === devlc) {
-          // aqui va axios
+        if (target === failed) {
+          Axios.post(`http://localhost:4000/update/${el.id}/5`);
+          return true;
         }
-        return true;
+        return false;
       },
     });
   }, []);
-
-  if (error) {
-    return <>Something went wrong :( </>;
-  }
-
-  if (isLoading) {
-    return <>Loading ... </>;
-  }
-
-  console.log(orders);
 
   return (
     <Box className={classes.root}>
@@ -148,13 +131,15 @@ const HomePage = () => {
                         className={classes.darkShadow}
                       >
                         {orders
-                          .filter((order) => order.location_id == 1)
-                          .map((order) => (
-                            <OrderCard
-                              id={order.id}
-                              name={order.name}
-                              location={order.location_name}
-                            />
+                          .filter((order) => order.location_id === 1)
+                          .map((order, i) => (
+                            <div id={order.id_order} key={i}>
+                              <OrderCard
+                                id={order.id_order}
+                                name={order.name}
+                                location={order.location_name}
+                              />
+                            </div>
                           ))}
                       </Grid>
                     </Box>
@@ -172,7 +157,19 @@ const HomePage = () => {
                         spacing={3}
                         ref={delCenterRef}
                         className={classes.darkShadow}
-                      ></Grid>
+                      >
+                        {orders
+                          .filter((order) => order.location_id === 2)
+                          .map((order, i) => (
+                            <div id={order.id_order} key={i}>
+                              <OrderCard
+                                id={order.id_order}
+                                name={order.name}
+                                location={order.location_name}
+                              />
+                            </div>
+                          ))}
+                      </Grid>
                     </Box>
                   </Card>
                 </Grid>
@@ -188,7 +185,19 @@ const HomePage = () => {
                         spacing={3}
                         ref={delProcRef}
                         className={classes.darkShadow}
-                      ></Grid>
+                      >
+                        {orders
+                          .filter((order) => order.location_id === 3)
+                          .map((order, i) => (
+                            <div id={order.id_order} key={i}>
+                              <OrderCard
+                                id={order.id_order}
+                                name={order.name}
+                                location={order.location_name}
+                              />
+                            </div>
+                          ))}
+                      </Grid>
                     </Box>
                   </Card>
                 </Grid>
@@ -207,7 +216,19 @@ const HomePage = () => {
                               spacing={3}
                               ref={completeRef}
                               className={classes.darkShadow}
-                            ></Grid>
+                            >
+                              {orders
+                                .filter((order) => order.location_id === 4)
+                                .map((order, i) => (
+                                  <div id={order.id_order} key={i}>
+                                    <OrderCard
+                                      id={order.id_order}
+                                      name={order.name}
+                                      location={order.location_name}
+                                    />
+                                  </div>
+                                ))}
+                            </Grid>
                           </Box>
                         </Card>
                       </Grid>
@@ -219,7 +240,19 @@ const HomePage = () => {
                               spacing={3}
                               ref={failedRef}
                               className={classes.darkShadow}
-                            ></Grid>
+                            >
+                              {orders
+                                .filter((order) => order.location_id === 5)
+                                .map((order, i) => (
+                                  <div id={order.id_order} key={i}>
+                                    <OrderCard
+                                      id={order.id_order}
+                                      name={order.name}
+                                      location={order.location_name}
+                                    />
+                                  </div>
+                                ))}
+                            </Grid>
                           </Box>
                         </Card>
                       </Grid>

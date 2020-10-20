@@ -1,18 +1,18 @@
 exports.up = function (knex) {
   return knex.schema
     .createTable("location", (table) => {
-      table.increments("id");
+      table.increments("id_location");
       table.string("location_name", 512).notNullable();
       table.timestamp("created_at").defaultTo(knex.fn.now());
     })
     .createTable("order", (table) => {
-      table.increments("id");
+      table.increments("id_order");
       table.string("name", 512).notNullable();
       table
         .integer("location_id")
         .unsigned()
         .notNullable()
-        .references("id")
+        .references("id_location")
         .inTable("location")
         .onDelete("CASCADE")
         .index();
@@ -22,12 +22,12 @@ exports.up = function (knex) {
       //table.foreign("location_id").references("location.id");
     })
     .createTable("transfer", (table) => {
-      table.increments("id");
+      table.increments("id_transfer");
       table
         .integer("order_id")
         .unsigned()
         .notNullable()
-        .references("id")
+        .references("id_order")
         .inTable("order")
         .onDelete("CASCADE")
         .index();
@@ -35,7 +35,7 @@ exports.up = function (knex) {
         .integer("location_id")
         .unsigned()
         .notNullable()
-        .references("id")
+        .references("id_location")
         .inTable("location")
         .onDelete("CASCADE")
         .index();
