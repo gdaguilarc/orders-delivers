@@ -1,4 +1,5 @@
 import React from "react";
+import Axios from "axios";
 
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
@@ -12,7 +13,9 @@ import Avatar from "@material-ui/core/Avatar";
 import useStyles from "./HomePageStyles";
 const OrderCard = ({ id, name, location }) => {
   const classes = useStyles();
-
+  async function sendRequest(id, location) {
+    await Axios.post(`http://localhost:4000/update/${id}/${location}`);
+  }
   return (
     <Grid item sm={12} key={id}>
       <CardActionArea>

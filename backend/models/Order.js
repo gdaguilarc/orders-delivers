@@ -7,7 +7,9 @@ exports.all = async () => {
 };
 
 exports.find = async (id) => {
-  return await knex("order").select("*").where("id_order", id).first();
+  const a = await knex("order").select("*").where("id_order", id).first();
+  console.log("a",a);
+  return a;
 };
 
 exports.create = async ({ name }) => {
@@ -16,11 +18,12 @@ exports.create = async ({ name }) => {
     location_id: 1,
   };
   id_created = await knex("order").insert(order);
-  await transfer(id_created);
-  return id_created;
+  await this.transfer(id_created);
+  return id_created; 
 };
 
 exports.update = async (id, location) => {
+
   order = await this.find(id);
   if (
     (order.delivered_center && location == 1) ||
@@ -50,15 +53,17 @@ exports.ordersTrack = async (id) => {
   return order;
 };
 
-const transfer = async (id) => {
-  await this.find(id).then((order) => {
-    knex("transfer").insert({
-      order_id: order.id_order,
-      location_id: order.location_id,
-    });
+exports.transfer = async (id) => {
+  const order = await this.find(id);
+  console.log(order);
+  await knex("transfer").insert({
+    order_id: order.id_order,
+    location_id: order.location_id,
   });
 };
 /*
+
+
 
 exports.PENDING = "pending";
 exports.DONE = "done";

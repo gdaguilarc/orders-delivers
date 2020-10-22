@@ -1,5 +1,6 @@
-import React, { createRef, useEffect, useCallback } from "react";
+import React, { createRef, useEffect, useState } from "react";
 import { findDOMNode } from "react-dom";
+import Axios from "axios";
 
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
@@ -12,16 +13,19 @@ import OrderCard from "./OrderCard";
 import InputOrders from "../InputOrders";
 
 import Dragula from "react-dragula";
+import DragulaStyles from "react-dragula/dist/dragula.min.css";
 import useFetchTasks from "./UseFetch";
-import Axios from "axios";
+
 
 const HomePage = () => {
   const classes = useStyles();
 
+  const [dragSource, setDragSource] = useState();
+
   const { orders, error, isLoading, setOrders } = useFetchTasks();
 
   let initRef = createRef();
-  let delCenterRef = createRef();
+  let  delCenterRef = createRef();
   let delProcRef = createRef();
   let completeRef = createRef();
   let failedRef = createRef();
@@ -31,71 +35,45 @@ const HomePage = () => {
     let devlc = findDOMNode(delCenterRef.current);
     let devProc = findDOMNode(delProcRef.current);
     let complete = findDOMNode(completeRef.current);
-    let failed = findDOMNode(failedRef.current);
+  let failed = findDOMNode(failedRef.current);
+  
+  Dragula([init, devlc, devProc, complete, failed], {
+    moves: function (el, source) {
+      setDragSource(source);
+      if (source === complete || source === failed){
+                return false;
+      }
+      return true;
+    },
+    accepts: function (el, target) {
+      let destiny = -1;
 
-    Dragula([init, devlc], {
-      accepts: function (el, target) {
-        if (target === devlc) {
-          // aqui va axios
-          Axios.post(`http://localhost:4000/update/${el.id}/2`);
-          return true;
-        }
-        return false;
-      },
-    });
+      if (target === init) {
+        destiny = 1;
+      } else if (target === devlc) {
+        destiny = 2;
+      } else if (target === devProc) {
+        destiny = 3;
+      } else if (target === complete) {
+        destiny = 4;
+      } else {
+        destiny = 5;
+      }
 
-    Dragula([devlc, devProc], {
-      accepts: function (el, target) {
-        console.log(el.id)
-        if (target === devProc) {
-          Axios.post(`http://localhost:4000/update/${el.id}/3`);
-        } else {
-          Axios.post(`http://localhost:4000/update/${el.id}/2`);
-        }
-        return true;
-      },
-    });
+      if (destiny !== 1) {
 
-    Dragula([devProc, complete], {
-      accepts: function (el, target) {
-        if (target === complete) {
-          Axios.post(`http://localhost:4000/update/${el.id}/4`);
-          return true;
-        }
-        return false;
-      },
-    });
 
-    Dragula([devProc, failed], {
-      accepts: function (el, target) {
-        if (target === failed) {
-          Axios.post(`http://localhost:4000/update/${el.id}/5`);
-          return true;
-        }
-        return false;
-      },
-    });
+        return true; 
+      }
+      return false; 
+     
+    },
+  });
 
-    Dragula([devlc, complete], {
-      accepts: function (el, target) {
-        if (target === complete) {
-          Axios.post(`http://localhost:4000/update/${el.id}/4`);
-          return true;
-        }
-        return false;
-      },
-    });
-
-    Dragula([devlc, failed], {
-      accepts: function (el, target) {
-        if (target === failed) {
-          Axios.post(`http://localhost:4000/update/${el.id}/5`);
-          return true;
-        }
-        return false;
-      },
-    });
+    
   }, []);
+  
+
 
   return (
     <Box className={classes.root}>
