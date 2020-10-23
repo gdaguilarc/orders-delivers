@@ -6,14 +6,15 @@ exports.getAll = (req, res) => {
   });
 };
 
-exports.addOrder = (req, res) => {
+exports.addOrder = async (req, res) => {
   let order = {};
   order.name = req.body.name;
-  Order.create(order).then((id) => {
-    if (req.xhr || req.headers.accept.indexOf("json") > -1) {
-      Order.find(id).then(() => res.send("success"));
-    }
-  });
+  const registered_order = await Order.create(order);
+  await Order.update(registered_order.id_order, 1);
+
+  if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+    return res.json(registered_order);
+  }
 };
 
 exports.updateOrder = (req, res) => {

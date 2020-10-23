@@ -8,7 +8,7 @@ exports.all = async () => {
 
 exports.find = async (id) => {
   const a = await knex("order").select("*").where("id_order", id).first();
-  console.log("a",a);
+  console.log("a", a);
   return a;
 };
 
@@ -19,11 +19,11 @@ exports.create = async ({ name }) => {
   };
   id_created = await knex("order").insert(order);
   await this.transfer(id_created);
-  return id_created; 
+
+  return await knex("order").select("*").where("id_order", id_created).first();
 };
 
 exports.update = async (id, location) => {
-
   order = await this.find(id);
   if (
     (order.delivered_center && location == 1) ||

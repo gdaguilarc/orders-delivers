@@ -19,7 +19,8 @@ const InputOrders = ({ onChange }) => {
       const { data } = await axios.post("http://localhost:4000/", {
         name: todo,
       });
-      //   onChange(data);
+      console.log(data);
+      onChange(data);
       setTodo("");
     }
   };

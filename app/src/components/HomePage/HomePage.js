@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useState } from "react";
+import React, { createRef, useEffect, useState, useCallback } from "react";
 import { findDOMNode } from "react-dom";
 import Axios from "axios";
 
@@ -20,6 +20,19 @@ const HomePage = () => {
   const classes = useStyles();
   const { orders, error, isLoading, setOrders } = useFetchTasks();
   const [dragSource, setDragSource] = useState();
+
+  const onChange = useCallback(
+    (data) => {
+      setOrders({
+        init: orders.init.concat(data),
+        delCenter: orders.delCenter,
+        delProc: orders.delProc,
+        complete: orders.complete,
+        failed: orders.failed,
+      });
+    },
+    [orders, setOrders]
+  );
 
   async function sendRequest(id, location) {
     await Axios.post(`http://localhost:4000/update/${id}/${location}`);
@@ -101,7 +114,7 @@ const HomePage = () => {
             </Box>
           </Grid>
           <Grid item sm={12}>
-            <InputOrders />
+            <InputOrders onChange={onChange} />
           </Grid>
           <Grid item sm={12}>
             <Box className={classes.content}>
