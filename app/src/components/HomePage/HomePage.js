@@ -16,16 +16,17 @@ import Dragula from "react-dragula";
 import DragulaStyles from "react-dragula/dist/dragula.min.css";
 import useFetchTasks from "./UseFetch";
 
-
 const HomePage = () => {
   const classes = useStyles();
-
+  const { orders, error, isLoading, setOrders } = useFetchTasks();
   const [dragSource, setDragSource] = useState();
 
-  const { orders, error, isLoading, setOrders } = useFetchTasks();
+  async function sendRequest(id, location) {
+    await Axios.post(`http://localhost:4000/update/${id}/${location}`);
+  }
 
   let initRef = createRef();
-  let  delCenterRef = createRef();
+  let delCenterRef = createRef();
   let delProcRef = createRef();
   let completeRef = createRef();
   let failedRef = createRef();
@@ -35,17 +36,37 @@ const HomePage = () => {
     let devlc = findDOMNode(delCenterRef.current);
     let devProc = findDOMNode(delProcRef.current);
     let complete = findDOMNode(completeRef.current);
-  let failed = findDOMNode(failedRef.current);
-  
-  Dragula([init, devlc, devProc, complete, failed], {
-    moves: function (el, source) {
-      setDragSource(source);
-      if (source === complete || source === failed){
-                return false;
-      }
-      return true;
-    },
-    accepts: function (el, target) {
+    let failed = findDOMNode(failedRef.current);
+
+    Dragula([init, devlc, devProc, complete, failed], {
+      moves: function (el, source) {
+        setDragSource(source);
+        if (source === complete || source === failed) {
+          return false;
+        }
+        return true;
+      },
+      accepts: function (el, target) {
+        let destiny = -1;
+
+        if (target === init) {
+          destiny = 1;
+        } else if (target === devlc) {
+          destiny = 2;
+        } else if (target === devProc) {
+          destiny = 3;
+        } else if (target === complete) {
+          destiny = 4;
+        } else {
+          destiny = 5;
+        }
+
+        if (destiny !== 1) {
+          return true;
+        }
+        return false;
+      },
+    }).on("drop", async function (el, target) {
       let destiny = -1;
 
       if (target === init) {
@@ -60,20 +81,9 @@ const HomePage = () => {
         destiny = 5;
       }
 
-      if (destiny !== 1) {
-
-
-        return true; 
-      }
-      return false; 
-     
-    },
-  });
-
-    
+      await sendRequest(el.id, destiny);
+    });
   }, []);
-  
-
 
   return (
     <Box className={classes.root}>
@@ -108,17 +118,15 @@ const HomePage = () => {
                         ref={initRef}
                         className={classes.darkShadow}
                       >
-                        {orders
-                          .filter((order) => order.location_id === 1)
-                          .map((order, i) => (
-                            <div id={order.id_order} key={i}>
-                              <OrderCard
-                                id={order.id_order}
-                                name={order.name}
-                                location={order.location_name}
-                              />
-                            </div>
-                          ))}
+                        {orders.init.map((order, i) => (
+                          <div id={order.id_order} key={i}>
+                            <OrderCard
+                              id={order.id_order}
+                              name={order.name}
+                              location={order.location_name}
+                            />
+                          </div>
+                        ))}
                       </Grid>
                     </Box>
                   </Card>
@@ -136,17 +144,15 @@ const HomePage = () => {
                         ref={delCenterRef}
                         className={classes.darkShadow}
                       >
-                        {orders
-                          .filter((order) => order.location_id === 2)
-                          .map((order, i) => (
-                            <div id={order.id_order} key={i}>
-                              <OrderCard
-                                id={order.id_order}
-                                name={order.name}
-                                location={order.location_name}
-                              />
-                            </div>
-                          ))}
+                        {orders.delCenter.map((order, i) => (
+                          <div id={order.id_order} key={i}>
+                            <OrderCard
+                              id={order.id_order}
+                              name={order.name}
+                              location={order.location_name}
+                            />
+                          </div>
+                        ))}
                       </Grid>
                     </Box>
                   </Card>
@@ -164,17 +170,15 @@ const HomePage = () => {
                         ref={delProcRef}
                         className={classes.darkShadow}
                       >
-                        {orders
-                          .filter((order) => order.location_id === 3)
-                          .map((order, i) => (
-                            <div id={order.id_order} key={i}>
-                              <OrderCard
-                                id={order.id_order}
-                                name={order.name}
-                                location={order.location_name}
-                              />
-                            </div>
-                          ))}
+                        {orders.delProc.map((order, i) => (
+                          <div id={order.id_order} key={i}>
+                            <OrderCard
+                              id={order.id_order}
+                              name={order.name}
+                              location={order.location_name}
+                            />
+                          </div>
+                        ))}
                       </Grid>
                     </Box>
                   </Card>
@@ -195,17 +199,15 @@ const HomePage = () => {
                               ref={completeRef}
                               className={classes.darkShadow}
                             >
-                              {orders
-                                .filter((order) => order.location_id === 4)
-                                .map((order, i) => (
-                                  <div id={order.id_order} key={i}>
-                                    <OrderCard
-                                      id={order.id_order}
-                                      name={order.name}
-                                      location={order.location_name}
-                                    />
-                                  </div>
-                                ))}
+                              {orders.complete.map((order, i) => (
+                                <div id={order.id_order} key={i}>
+                                  <OrderCard
+                                    id={order.id_order}
+                                    name={order.name}
+                                    location={order.location_name}
+                                  />
+                                </div>
+                              ))}
                             </Grid>
                           </Box>
                         </Card>
@@ -219,17 +221,15 @@ const HomePage = () => {
                               ref={failedRef}
                               className={classes.darkShadow}
                             >
-                              {orders
-                                .filter((order) => order.location_id === 5)
-                                .map((order, i) => (
-                                  <div id={order.id_order} key={i}>
-                                    <OrderCard
-                                      id={order.id_order}
-                                      name={order.name}
-                                      location={order.location_name}
-                                    />
-                                  </div>
-                                ))}
+                              {orders.failed.map((order, i) => (
+                                <div id={order.id_order} key={i}>
+                                  <OrderCard
+                                    id={order.id_order}
+                                    name={order.name}
+                                    location={order.location_name}
+                                  />
+                                </div>
+                              ))}
                             </Grid>
                           </Box>
                         </Card>
