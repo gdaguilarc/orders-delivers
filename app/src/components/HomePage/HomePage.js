@@ -19,7 +19,6 @@ import useFetchTasks from "./UseFetch";
 const HomePage = () => {
   const classes = useStyles();
   const { orders, error, isLoading, setOrders } = useFetchTasks();
-  const [dragSource, setDragSource] = useState();
 
   const onChange = useCallback(
     (data) => {
@@ -53,13 +52,12 @@ const HomePage = () => {
 
     Dragula([init, devlc, devProc, complete, failed], {
       moves: function (el, source) {
-        setDragSource(source);
         if (source === complete || source === failed) {
           return false;
         }
         return true;
       },
-      accepts: function (el, target) {
+      accepts: function (el, target, source) {
         let destiny = -1;
 
         if (target === init) {
@@ -75,27 +73,30 @@ const HomePage = () => {
         }
 
         if (destiny !== 1) {
+          if (source === init && target !== devlc) {
+            return false;
+          }
           return true;
         }
         return false;
       },
     }).on("drop", async function (el, target) {
-      let destiny = -1;
+        let destiny = -1;
 
-      if (target === init) {
-        destiny = 1;
-      } else if (target === devlc) {
-        destiny = 2;
-      } else if (target === devProc) {
-        destiny = 3;
-      } else if (target === complete) {
-        destiny = 4;
-      } else {
-        destiny = 5;
-      }
+        if (target === init) {
+          destiny = 1;
+        } else if (target === devlc) {
+          destiny = 2;
+        } else if (target === devProc) {
+          destiny = 3;
+        } else if (target === complete) {
+          destiny = 4;
+        } else {
+          destiny = 5;
+        }
 
-      await sendRequest(el.id, destiny);
-    });
+        await sendRequest(el.id, destiny);
+      });
   }, []);
 
   return (
